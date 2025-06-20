@@ -85,10 +85,21 @@ export const VehicleCard = ({ vehicle, onEdit, onDelete }: VehicleCardProps) => 
 
         {/* Prediction */}
         <div className="bg-slate-50 rounded-lg p-3">
-          <div className="text-sm text-slate-600 mb-1">Previsão para abastecimento</div>
-          <div className="font-bold text-slate-800">
-            {weeksRemaining === 1 ? '1 semana' : `${weeksRemaining} semanas`}
-          </div>
+          {vehicle.fuelLevel === 0 ? (
+            <>
+              <div className="text-sm text-slate-600 mb-1">Status do veículo</div>
+              <div className="font-bold text-red-600">
+                Carro precisa de abastecimento
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-sm text-slate-600 mb-1">Previsão para abastecimento</div>
+              <div className="font-bold text-slate-800">
+                {weeksRemaining === 1 ? '1 semana' : `${weeksRemaining} semanas`}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </Card>
