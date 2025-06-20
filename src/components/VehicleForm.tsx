@@ -5,17 +5,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface VehicleFormProps {
   vehicle?: Vehicle | null;
   onSubmit: (vehicle: Omit<Vehicle, 'id'>) => void;
   onCancel: () => void;
+  existingVehicles: Vehicle[];
 }
 
-export const VehicleForm = ({ vehicle, onSubmit, onCancel }: VehicleFormProps) => {
+export const VehicleForm = ({ vehicle, onSubmit, onCancel, existingVehicles }: VehicleFormProps) => {
   const [licensePlate, setLicensePlate] = useState('');
   const [fuelLevel, setFuelLevel] = useState('');
   const [errors, setErrors] = useState<{ licensePlate?: string; fuelLevel?: string }>({});
+  const [showDuplicateAlert, setShowDuplicateAlert] = useState(false);
 
   useEffect(() => {
     if (vehicle) {
@@ -31,6 +41,15 @@ export const VehicleForm = ({ vehicle, onSubmit, onCancel }: VehicleFormProps) =
     return oldFormat.test(plate.toUpperCase()) || newFormat.test(plate.toUpperCase());
   };
 
+  const checkDuplicatePlate = (plate: string): boolean => {
+    // If editing, don't check against the current vehicle's plate
+    const platesToCheck = vehicle 
+      ? existingVehicles.filter(v => v.id !== vehicle.id)
+      : existingVehicles;
+    
+    return platesToCheck.some(v => v.licensePlate.toUpperCase() === plate.toUpperCase());
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -41,6 +60,10 @@ export const VehicleForm = ({ vehicle, onSubmit, onCancel }: VehicleFormProps) =
       newErrors.licensePlate = 'Placa é obrigatória';
     } else if (!validateLicensePlate(licensePlate)) {
       newErrors.licensePlate = 'Formato inválido (ex: ABC-1234 ou ABC1D23)';
+    } else if (checkDuplicatePlate(licensePlate)) {
+      // Show duplicate alert popup instead of form error
+      setShowDuplicateAlert(true);
+      return;
     }
     
     // Validate fuel level
@@ -86,69 +109,95 @@ export const VehicleForm = ({ vehicle, onSubmit, onCancel }: VehicleFormProps) =
     setLicensePlate(formatted);
   };
 
+  const handleDuplicateAlertClose = () => {
+    setShowDuplicateAlert(false);
+    // Clear the license plate field to allow user to enter a new one
+    setLicensePlate('');
+  };
+
   return (
-    <div>
-      <h2 className="text-xl font-bold text-slate-800 mb-4">
-        {vehicle ? 'Editar Veículo' : 'Adicionar Novo Veículo'}
-      </h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* License Plate */}
-        <div className="space-y-2">
-          <Label htmlFor="licensePlate" className="text-slate-700 font-medium">
-            Placa do Veículo
-          </Label>
-          <Input
-            id="licensePlate"
-            type="text"
-            value={licensePlate}
-            onChange={handleLicensePlateChange}
-            placeholder="ABC-1234 ou ABC1D23"
-            className={`font-mono ${errors.licensePlate ? 'border-red-500' : ''}`}
-          />
-          {errors.licensePlate && (
-            <p className="text-red-500 text-sm">{errors.licensePlate}</p>
-          )}
-        </div>
+    <>
+      <div>
+        <h2 className="text-xl font-bold text-slate-800 mb-4">
+          {vehicle ? 'Editar Veículo' : 'Adicionar Novo Veículo'}
+        </h2>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* License Plate */}
+          <div className="space-y-2">
+            <Label htmlFor="licensePlate" className="text-slate-700 font-medium">
+              Placa do Veículo
+            </Label>
+            <Input
+              id="licensePlate"
+              type="text"
+              value={licensePlate}
+              onChange={handleLicensePlateChange}
+              placeholder="ABC-1234 ou ABC1D23"
+              className={`font-mono ${errors.licensePlate ? 'border-red-500' : ''}`}
+            />
+            {errors.licensePlate && (
+              <p className="text-red-500 text-sm">{errors.licensePlate}</p>
+            )}
+          </div>
 
-        {/* Fuel Level */}
-        <div className="space-y-2">
-          <Label htmlFor="fuelLevel" className="text-slate-700 font-medium">
-            Nível de Combustível (%)
-          </Label>
-          <Input
-            id="fuelLevel"
-            type="number"
-            min="0"
-            max="100"
-            value={fuelLevel}
-            onChange={(e) => setFuelLevel(e.target.value)}
-            placeholder="0-100"
-            className={errors.fuelLevel ? 'border-red-500' : ''}
-          />
-          {errors.fuelLevel && (
-            <p className="text-red-500 text-sm">{errors.fuelLevel}</p>
-          )}
-        </div>
+          {/* Fuel Level */}
+          <div className="space-y-2">
+            <Label htmlFor="fuelLevel" className="text-slate-700 font-medium">
+              Nível de Combustível (%)
+            </Label>
+            <Input
+              id="fuelLevel"
+              type="number"
+              min="0"
+              max="100"
+              value={fuelLevel}
+              onChange={(e) => setFuelLevel(e.target.value)}
+              placeholder="0-100"
+              className={errors.fuelLevel ? 'border-red-500' : ''}
+            />
+            {errors.fuelLevel && (
+              <p className="text-red-500 text-sm">{errors.fuelLevel}</p>
+            )}
+          </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-3 pt-4">
-          <Button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
+            <Button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+            >
+              {vehicle ? 'Salvar Alterações' : 'Adicionar Veículo'}
+            </Button>
+            <Button
+              type="button"
+              onClick={onCancel}
+              variant="outline"
+              className="px-6 py-2 rounded-lg border-slate-300 text-slate-600 hover:bg-slate-50"
+            >
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      {/* Duplicate Alert Dialog */}
+      <AlertDialog open={showDuplicateAlert} onOpenChange={setShowDuplicateAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-slate-800">Veículo já cadastrado</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600">
+              Este veículo já foi cadastrado.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogAction
+            onClick={handleDuplicateAlertClose}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            {vehicle ? 'Salvar Alterações' : 'Adicionar Veículo'}
-          </Button>
-          <Button
-            type="button"
-            onClick={onCancel}
-            variant="outline"
-            className="px-6 py-2 rounded-lg border-slate-300 text-slate-600 hover:bg-slate-50"
-          >
-            Cancelar
-          </Button>
-        </div>
-      </form>
-    </div>
+            Cadastrar outro veículo
+          </AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };

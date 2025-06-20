@@ -79,6 +79,7 @@ const Index = () => {
               vehicle={editingVehicle}
               onSubmit={editingVehicle ? handleEditVehicle : handleAddVehicle}
               onCancel={closeForm}
+              existingVehicles={vehicles}
             />
           </Card>
         )}
