@@ -23,13 +23,15 @@ interface VehicleFormProps {
 
 export const VehicleForm = ({ vehicle, onSubmit, onCancel, existingVehicles }: VehicleFormProps) => {
   const [licensePlate, setLicensePlate] = useState('');
+  const [vehicleNumber, setVehicleNumber] = useState('');
   const [fuelLevel, setFuelLevel] = useState('');
-  const [errors, setErrors] = useState<{ licensePlate?: string; fuelLevel?: string }>({});
+  const [errors, setErrors] = useState<{ licensePlate?: string; vehicleNumber?: string; fuelLevel?: string }>({});
   const [showDuplicateAlert, setShowDuplicateAlert] = useState(false);
 
   useEffect(() => {
     if (vehicle) {
       setLicensePlate(vehicle.licensePlate);
+      setVehicleNumber(vehicle.vehicleNumber);
       setFuelLevel(vehicle.fuelLevel.toString());
     }
   }, [vehicle]);
@@ -53,7 +55,7 @@ export const VehicleForm = ({ vehicle, onSubmit, onCancel, existingVehicles }: V
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const newErrors: { licensePlate?: string; fuelLevel?: string } = {};
+    const newErrors: { licensePlate?: string; vehicleNumber?: string; fuelLevel?: string } = {};
     
     // Validate license plate
     if (!licensePlate.trim()) {
@@ -64,6 +66,11 @@ export const VehicleForm = ({ vehicle, onSubmit, onCancel, existingVehicles }: V
       // Show duplicate alert popup instead of form error
       setShowDuplicateAlert(true);
       return;
+    }
+    
+    // Validate vehicle number
+    if (!vehicleNumber.trim()) {
+      newErrors.vehicleNumber = 'Número do veículo é obrigatório';
     }
     
     // Validate fuel level
@@ -79,9 +86,11 @@ export const VehicleForm = ({ vehicle, onSubmit, onCancel, existingVehicles }: V
     if (Object.keys(newErrors).length === 0) {
       onSubmit({
         licensePlate: licensePlate.toUpperCase(),
+        vehicleNumber: vehicleNumber.trim(),
         fuelLevel: fuelNumber,
       });
       setLicensePlate('');
+      setVehicleNumber('');
       setFuelLevel('');
     }
   };
@@ -138,6 +147,24 @@ export const VehicleForm = ({ vehicle, onSubmit, onCancel, existingVehicles }: V
             />
             {errors.licensePlate && (
               <p className="text-red-500 text-sm">{errors.licensePlate}</p>
+            )}
+          </div>
+
+          {/* Vehicle Number */}
+          <div className="space-y-2">
+            <Label htmlFor="vehicleNumber" className="text-slate-700 font-medium">
+              Número do Veículo
+            </Label>
+            <Input
+              id="vehicleNumber"
+              type="text"
+              value={vehicleNumber}
+              onChange={(e) => setVehicleNumber(e.target.value)}
+              placeholder="ex: 001, A03, 27B"
+              className={errors.vehicleNumber ? 'border-red-500' : ''}
+            />
+            {errors.vehicleNumber && (
+              <p className="text-red-500 text-sm">{errors.vehicleNumber}</p>
             )}
           </div>
 

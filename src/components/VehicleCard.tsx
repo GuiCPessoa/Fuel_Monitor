@@ -18,10 +18,15 @@ export const VehicleCard = ({ vehicle, onEdit, onDelete }: VehicleCardProps) => 
   return (
     <Card className="p-6 bg-white shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
       <div className="space-y-4">
-        {/* License Plate */}
+        {/* License Plate and Vehicle Number */}
         <div className="flex items-center justify-between">
-          <div className="bg-slate-800 text-white px-3 py-1 rounded font-mono text-sm font-bold tracking-wider">
-            {vehicle.licensePlate}
+          <div className="flex items-center gap-3">
+            <div className="bg-slate-800 text-white px-3 py-1 rounded font-mono text-sm font-bold tracking-wider">
+              {vehicle.licensePlate}
+            </div>
+            <div className="text-slate-600 text-sm font-medium">
+              Nº: {vehicle.vehicleNumber}
+            </div>
           </div>
           <div className="flex gap-2">
             <Button

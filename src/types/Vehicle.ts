@@ -2,6 +2,7 @@
 export interface Vehicle {
   id: string;
   licensePlate: string;
+  vehicleNumber: string;
   fuelLevel: number;
 }
 
