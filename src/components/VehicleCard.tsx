@@ -1,8 +1,8 @@
 
-import { Vehicle, getFuelColor, calculateFuelWeeks } from '@/types/Vehicle';
+import { Vehicle, getFuelColor, calculateFuelWeeks, getFuelGauge } from '@/types/Vehicle';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Gauge } from 'lucide-react';
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -13,6 +13,7 @@ interface VehicleCardProps {
 export const VehicleCard = ({ vehicle, onEdit, onDelete }: VehicleCardProps) => {
   const fuelColor = getFuelColor(vehicle.fuelLevel);
   const weeksRemaining = calculateFuelWeeks(vehicle.fuelLevel);
+  const fuelGauge = getFuelGauge(vehicle.fuelLevel);
 
   return (
     <Card className="p-6 bg-white shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -46,14 +47,22 @@ export const VehicleCard = ({ vehicle, onEdit, onDelete }: VehicleCardProps) => 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-slate-600 font-medium">Nível de Combustível</span>
-            <div className="flex items-center gap-2">
-              <div 
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: fuelColor }}
-              />
-              <span className="font-bold text-lg" style={{ color: fuelColor }}>
-                {vehicle.fuelLevel}%
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: fuelColor }}
+                />
+                <span className="font-bold text-lg" style={{ color: fuelColor }}>
+                  {vehicle.fuelLevel}%
+                </span>
+              </div>
+              <div className="flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-lg">
+                <Gauge className="w-4 h-4 text-slate-600" />
+                <span className="text-sm font-semibold text-slate-700">
+                  {fuelGauge}
+                </span>
+              </div>
             </div>
           </div>
 
