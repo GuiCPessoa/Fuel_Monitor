@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Vehicle } from '@/types/Vehicle';
 import { Button } from '@/components/ui/button';
@@ -88,6 +87,7 @@ export const VehicleForm = ({ vehicle, onSubmit, onCancel, existingVehicles }: V
         licensePlate: licensePlate.toUpperCase(),
         vehicleNumber: vehicleNumber.trim(),
         fuelLevel: fuelNumber,
+        lastRefuelDate: vehicle?.lastRefuelDate || new Date(),
       });
       setLicensePlate('');
       setVehicleNumber('');
