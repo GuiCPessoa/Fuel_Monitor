@@ -16,6 +16,7 @@ const Index = () => {
     const newVehicle: Vehicle = {
       ...vehicleData,
       id: Date.now().toString(),
+      lastRefuelDate: vehicleData.lastRefuelDate || new Date(),
     };
     setVehicles([...vehicles, newVehicle]);
     setShowForm(false);

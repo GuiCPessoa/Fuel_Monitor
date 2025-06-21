@@ -1,9 +1,9 @@
-
 export interface Vehicle {
   id: string;
   licensePlate: string;
   vehicleNumber: string;
   fuelLevel: number;
+  lastRefuelDate: Date;
 }
 
 export type FuelStatus = 'high' | 'medium' | 'low';
@@ -28,6 +28,17 @@ export const calculateFuelWeeks = (fuelLevel: number): number => {
   // 36 km/dia × 6 dias = 216 km/semana
   // 55L tanque × 10 km/l = 550 km autonomia total
   return Math.round((fuelLevel * 550) / 216 / 100);
+};
+
+export const calculateRefuelDates = (lastRefuelDate: Date, weeksRemaining: number) => {
+  const startDate = new Date(lastRefuelDate);
+  const endDate = new Date(lastRefuelDate);
+  endDate.setDate(endDate.getDate() + (weeksRemaining * 7));
+  
+  return {
+    startDate: startDate.toLocaleDateString('pt-BR'),
+    endDate: endDate.toLocaleDateString('pt-BR')
+  };
 };
 
 export const getFuelGauge = (fuelLevel: number): string => {

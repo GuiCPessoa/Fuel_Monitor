@@ -1,8 +1,7 @@
-
-import { Vehicle, getFuelColor, calculateFuelWeeks, getFuelGauge } from '@/types/Vehicle';
+import { Vehicle, getFuelColor, calculateFuelWeeks, getFuelGauge, calculateRefuelDates } from '@/types/Vehicle';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, Gauge } from 'lucide-react';
+import { Edit, Trash2, Gauge, Calendar, Fuel } from 'lucide-react';
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -14,6 +13,7 @@ export const VehicleCard = ({ vehicle, onEdit, onDelete }: VehicleCardProps) => 
   const fuelColor = getFuelColor(vehicle.fuelLevel);
   const weeksRemaining = calculateFuelWeeks(vehicle.fuelLevel);
   const fuelGauge = getFuelGauge(vehicle.fuelLevel);
+  const refuelDates = calculateRefuelDates(vehicle.lastRefuelDate, weeksRemaining);
 
   return (
     <Card className="p-6 bg-white shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -94,9 +94,20 @@ export const VehicleCard = ({ vehicle, onEdit, onDelete }: VehicleCardProps) => 
             </>
           ) : (
             <>
-              <div className="text-sm text-slate-600 mb-1">Previsão para abastecimento</div>
-              <div className="font-bold text-slate-800">
-                {weeksRemaining === 1 ? '1 semana' : `${weeksRemaining} semanas`}
+              <div className="text-sm text-slate-600 mb-2">Previsão para abastecimento</div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Fuel className="w-4 h-4 text-slate-600" />
+                  <span className="font-bold text-slate-800">
+                    {weeksRemaining === 1 ? '1 semana' : `${weeksRemaining} semanas`}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-slate-600">
+                  <Calendar className="w-4 h-4" />
+                  <span>
+                    De: {refuelDates.startDate} até {refuelDates.endDate}
+                  </span>
+                </div>
               </div>
             </>
           )}
