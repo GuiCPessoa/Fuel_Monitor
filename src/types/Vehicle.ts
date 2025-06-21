@@ -24,9 +24,10 @@ export const getFuelColor = (fuelLevel: number): string => {
 };
 
 export const calculateFuelWeeks = (fuelLevel: number): number => {
-  // Fórmula: (nívelAtual% × 55 × 10) / 12
-  // 55L tanque, 10km/l consumo, 12km/semana rodagem
-  return Math.round((fuelLevel * 55 * 10) / 12 / 100);
+  // Nova fórmula: (nívelAtual% × 550 km autonomia total) / 216 km/semana
+  // 36 km/dia × 6 dias = 216 km/semana
+  // 55L tanque × 10 km/l = 550 km autonomia total
+  return Math.round((fuelLevel * 550) / 216 / 100);
 };
 
 export const getFuelGauge = (fuelLevel: number): string => {
